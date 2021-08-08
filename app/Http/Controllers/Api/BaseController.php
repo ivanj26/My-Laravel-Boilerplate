@@ -48,7 +48,10 @@ class BaseController extends Controller {
 
     /**
      * send success response method
-     * @return \Illuminate\Http\Response
+     * @param array|null $data
+     * @param int $code
+     * @param string $message 
+     * @return \Illuminate\Http\Response $response
      */
     public function sendResponse($data = null, $code = 200, $message = '')
     {
@@ -75,8 +78,11 @@ class BaseController extends Controller {
      }
 
      /**
-      * throw an error
-      * @return \Illuminate\Http\Response
+      * throw an error response.
+      *
+      * @param string $code
+      * @param string $message
+      * @return \Illuminate\Http\Response $response
       */
     public function throwError($code = 404, $message = '')
     {

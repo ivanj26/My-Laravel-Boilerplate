@@ -59,6 +59,28 @@ abstract class BaseModule
     }
 
     /**
+	 * Create a new instance of the model's query builder
+	 *
+	 * @return $this
+	 */
+	protected function newQuery()
+	{
+		$this->query = $this->model->newQuery();
+		return $this;
+	}
+
+    /**
+	 * Add relationships to the query builder to eager load
+	 *
+	 * @return \Illuminate\Database\Eloquent\Builder $builder
+	 */
+	protected function eagerLoad()
+	{ 
+		return $this->query->with($this->eagers);
+	}
+ 
+
+    /**
      * Get all records in the database.
      * 
      * @param Closure modifier
@@ -66,7 +88,9 @@ abstract class BaseModule
      */
     public function findAll(Closure $modifier = null)
     {
-        $builder = $this->query->with($this->eagers);
+        $builder = $this
+            ->newQuery()
+            ->eagerLoad();
         if (is_callable($modifier)) {
             $builder = $builder->where($modifier);
         }
@@ -84,9 +108,11 @@ abstract class BaseModule
      * @param string pageName
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($limit = 10, $page = 1, array $columns = ['*'], Closure $modifier = null, $pageName = 'page')
+    public function paginate($limit = 10, $page = 1, Closure $modifier = null, array $columns = ['*'], $pageName = 'page')
     {
-        $builder = $this->query->with($this->eagers);
+        $builder = $this
+            ->newQuery()
+            ->eagerLoad();
         if (is_callable($modifier)) {
             $builder = $builder->where($modifier);
         }
@@ -98,13 +124,21 @@ abstract class BaseModule
      * Get first records from given modifier in the database.
      * 
      * @param Closure modifier
+     * @param bool $throwError default true
      * @return \Illuminate\Database\Eloquent\Model|object|static|null
      */
-    public function findOne(Closure $modifier = null)
+    public function findOne(Closure $modifier = null, bool $throwError = true)
     {
-        $builder = $this->query->with($this->eagers);
+        $builder = $this
+            ->newQuery()
+            ->eagerLoad();
+
         if (is_callable($modifier)) {
             $builder = $builder->where($modifier);
+        }
+
+        if ($throwError) {
+            return $builder->firstOrFail();
         }
 
         return $builder->first();
@@ -116,17 +150,22 @@ abstract class BaseModule
      * @param String column
      * @param String value
      * @param Closure modifier
+     * @param bool $throwError default true
      * @return \Illuminate\Database\Eloquent\Model|object|static|null
      */
-    public function findOneBy($column, $value, Closure $modifier = null)
+    public function findOneBy($column, $value, Closure $modifier = null, bool $throwError = true)
     {
         $builder = $this
-            ->query
-            ->with($this->eagers)
+            ->newQuery()
+            ->eagerLoad()
             ->where($column, $value);
 
         if (is_callable($modifier)) {
             $builder = $builder->where($modifier);
+        }
+
+        if ($throwError) {
+            return $builder->firstOrFail();
         }
 
         return $builder->first();
@@ -136,12 +175,13 @@ abstract class BaseModule
      * Insert records to database.
      * 
      * @param array payload
-     * @return void 
+     * @return \Illuminate\Database\Eloquent\Model|object|static|null
      */
     public function create($payload)
     {
-        $this
-            ->query
-            ->insert($payload);
+        $builder = $this
+            ->newQuery()
+            ->eagerLoad();
+        return $builder->insertGetId($payload);
     }
 }
