@@ -55,8 +55,10 @@ class BaseController extends Controller {
      */
     public function sendResponse($data = null, $code = 200, $message = '')
     {
-        $format = 'success call %s';
-        $message = isEmpty($message) ? sprintf($format, $this->name) : $message;
+        $trace = debug_backtrace()[2];
+        $actionName = $trace['args'][0];
+        $format = 'success call %s action in %s';
+        $message = isEmpty($message) ? sprintf($format, $actionName, $this->name) : $message;
         $response = [
             'statusCode' => $code,
             'data' => $data,

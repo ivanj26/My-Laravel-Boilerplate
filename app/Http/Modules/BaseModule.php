@@ -182,6 +182,8 @@ abstract class BaseModule
         $builder = $this
             ->newQuery()
             ->eagerLoad();
+        $payload['created_at'] = DB::raw('CURRENT_TIMESTAMP');
+        $payload['updated_at'] = DB::raw('CURRENT_TIMESTAMP');
         return $builder->insertGetId($payload);
     }
 }
