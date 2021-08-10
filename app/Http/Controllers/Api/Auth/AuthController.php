@@ -51,7 +51,7 @@ class AuthController extends BaseController
         $user = Auth::user();
         $response = [
             'user' => $user,
-            'token' => $user->createToken('userToken')->plainTextToken,
+            'token' => $user->createToken('auth_token', [$user->role])->plainTextToken,
             'type' => 'Bearer'
         ];
         return $this->sendResponse($response);
