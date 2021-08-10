@@ -42,11 +42,6 @@ class BaseController extends Controller {
     }
 
     /**
-     * destructor of BaseController.
-     * 
-     */
-
-    /**
      * send success response method
      * @param array|null $data
      * @param int $code
