@@ -45,7 +45,7 @@ class AuthController extends BaseController
         $password = $validated['password'];
 
         if (!Auth::attempt(['email' => $email, 'password' => $password])) {
-            $this->throwError(401);
+            $this->throwError(401, 'failed to issue the token');
         }
 
         $user = Auth::user();
