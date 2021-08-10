@@ -9,11 +9,10 @@ class UserModule extends BaseModule
     /**
      * UserModule constructor.
      * 
-     * @param User user
      */
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->model = $user;
+        $this->model = new User();
         $this->eagers = [];
         $this->query = $this->model->newQuery();
     }

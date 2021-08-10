@@ -29,7 +29,7 @@ class AuthController extends BaseController
 
     public function __construct()
     {
-        $this->module = new UserModule(new User);
+        $this->module = new UserModule();
     }
 
     /**

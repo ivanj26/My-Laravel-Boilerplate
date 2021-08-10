@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Modules\UserModule;
-use App\Models\User;
-use Illuminate\Http\Request;
 
 class UserController extends BaseController
 {
@@ -25,6 +23,6 @@ class UserController extends BaseController
 
     public function __construct()
     {
-        $this->module = new UserModule(new User);
+        $this->module = new UserModule();
     }
 }
