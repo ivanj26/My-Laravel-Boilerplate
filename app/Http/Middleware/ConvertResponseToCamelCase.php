@@ -19,8 +19,10 @@ class ConvertResponseToCamelCase
     {
         $response = $next($request);
         $content = $response->getContent();
+        $contentType = $response->headers->get('content-type');
 
         try {
+            if ($contentType !== 'application/json') return $response;
             $json = json_decode($content, true);
             $data = $json['data'];
             $camelResponse = GeneralHelper::toCamelCase($data);
