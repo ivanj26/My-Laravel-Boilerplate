@@ -41,8 +41,8 @@ class AuthController extends BaseController
     public function createSession(CreateSessionRequest $request)
     {
         $validated = $request->validated();
-        $email = $validated['email'];
-        $password = $validated['password'];
+        $email = data_get($validated, 'email');
+        $password = data_get($validated, 'password');
 
         if (!Auth::attempt(['email' => $email, 'password' => $password])) {
             $this->throwError(401, 'failed to issue the token');
@@ -51,7 +51,7 @@ class AuthController extends BaseController
         $user = Auth::user();
         $response = [
             'user' => $user,
-            'token' => $user->createToken('auth_token', [$user->role])->plainTextToken,
+            'token' => $user->createToken('auth_token', [data_get($user, 'role')])->plainTextToken,
             'type' => 'Bearer'
         ];
         return $this->sendResponse($response);

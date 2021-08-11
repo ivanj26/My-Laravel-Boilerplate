@@ -15,10 +15,11 @@ class CollectionRequest extends BaseRequest
     public function rules()
     {
         return [
-            'page' => 'required|numeric',
-            'limit' => 'required|numeric',
+            'page' => 'sometimes|required|numeric',
+            'limit' => 'sometimes|required|numeric',
             'orderBy' => 'sometimes|required|string',
-            'sortBy' => 'sometimes|required|string|in:desc,asc'
+            'sortBy' => 'sometimes|required|string|in:desc,asc',
+            'query' => 'nullable|string'
         ];
     }
 
