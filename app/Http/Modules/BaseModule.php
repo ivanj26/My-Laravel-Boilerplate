@@ -3,6 +3,7 @@
 namespace App\Http\Modules;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseModule
 {
@@ -185,5 +186,27 @@ abstract class BaseModule
         $payload['created_at'] = DB::raw('CURRENT_TIMESTAMP');
         $payload['updated_at'] = DB::raw('CURRENT_TIMESTAMP');
         return $builder->insertGetId($payload);
+    }
+
+    /**
+     * Find and update record in database
+     * 
+     * @param string $column
+     * @param string $value
+     * @param array $payload
+     * @return \Illuminate\Database\Eloquent\Model|object|static|null
+     */
+    public function findByAndUpdate(string $column, string $value, array $payload, Closure $modifier = null)
+    {
+        $model = $this->findOneBy($column, $value, $modifier, false);
+        if (empty($model) || !($model instanceof Model)) {
+            return false;
+        }
+
+        foreach ($payload as $key => $value) {
+          $model[$key] = $value;
+        }
+
+        return $model->save();
     }
 }
