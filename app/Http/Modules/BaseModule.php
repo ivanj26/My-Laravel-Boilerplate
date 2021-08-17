@@ -4,6 +4,7 @@ namespace App\Http\Modules;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 abstract class BaseModule
 {
