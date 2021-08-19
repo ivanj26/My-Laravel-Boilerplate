@@ -8,10 +8,10 @@ class ServiceCallerHelper {
     /**
      * Call internal service using call method.
      * 
-     * @param string GET|POST|PUT|DELETE|PATCH.
-     * @param string endpoint
-     * @param array params
-     * 
+     * @param string $method GET|POST|PUT|DELETE|PATCH.
+     * @param string $endpoint
+     * @param array $params
+     * @return mixed $response
      */
     public static function call(string $method, string $endpoint, array $params = [])
     {
