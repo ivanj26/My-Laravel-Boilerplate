@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Category\CategoryController;
+use App\Http\Controllers\Api\Document\DocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,12 +29,18 @@ Route::group([
     Route::post('session/create', [AuthController::class, 'createSession']);
     Route::post('session/sign-up', [AuthController::class, 'signUp']);
 
+    Route::get('documents/{fileName}', [DocumentController::class, 'getByFilename']);
+
     /**
      * PRIVATE APIs
      */
     Route::middleware(['auth:sanctum'])
         ->group(function () {
             Route::post('session/revoke', [AuthController::class, 'revokeSession']);
+
+            // Document service
+            Route::post('documents', [DocumentController::class, 'store']);
+            Route::post('documents/bulk', [DocumentController::class, 'bulkStore']);
 
             // Other service
             //

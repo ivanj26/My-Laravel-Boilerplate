@@ -12,7 +12,8 @@
         "laravel/framework": "^8.40",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "propaganistas/laravel-phone": "^4.3"
+        "propaganistas/laravel-phone": "^4.3",
+        "ralouphie/mimey": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
