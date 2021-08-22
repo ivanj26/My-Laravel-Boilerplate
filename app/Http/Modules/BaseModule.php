@@ -184,8 +184,6 @@ abstract class BaseModule
         $builder = $this
             ->newQuery()
             ->eagerLoad();
-        $payload['created_at'] = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');;
-        $payload['updated_at'] = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');;
         return $builder->insertGetId($payload);
     }
 

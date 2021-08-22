@@ -6,6 +6,11 @@ use App\Http\Requests\BaseRequest;
 
 class StoreDocumentRequest extends BaseRequest
 {
+    public function documentableKeys()
+    {
+        return implode(',', ['App\Models\User']);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -38,6 +43,8 @@ class StoreDocumentRequest extends BaseRequest
                     return true;
                 }
             ],
+            'table' => "sometimes|string|in:{$this->documentableKeys()}",
+            'tableId' => "required_with:table|numeric",
             'filename' => 'required|string'
         ];
     }

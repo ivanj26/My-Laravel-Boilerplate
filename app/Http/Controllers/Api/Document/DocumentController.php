@@ -53,6 +53,8 @@ class DocumentController extends BaseController
     {
         $user = $request->user();
         $validated = $request->validated();
+        $table = data_get($validated, 'table');
+        $tableId = data_get($validated, 'table_id');
         $content = data_get($validated, 'content');
         $filename = data_get($validated, 'filename');
         $filename = data_get(Str::of($filename)->explode('.'), '0');
@@ -91,6 +93,8 @@ class DocumentController extends BaseController
             $doc = new Document();
             $doc->url = $url;
             $doc->filename = $filename;
+            $doc->table = $table;
+            $doc->table_id = $tableId;
             $doc->mime_type = $mimeType;
             $doc->type = $type;
             $doc->uploader_id = $user->id;

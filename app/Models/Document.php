@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,16 +32,24 @@ class Document extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->created_at = $model->freshTimestamp();
-            $model->updated_at = $model->freshTimestamp();
+            $model->created_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
+            $model->updated_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
         });
     }
 
     /**
      * //////////////////////
-     * Defining relation ship
+     * Defining relationship
      * //////////////////////
      */
+
+    /**
+     * Get all of the models that own document.
+     */
+    public function documentable()
+    {
+        return $this->morphTo(__FUNCTION__, 'table', 'table_id');
+    }
     
      /**
      * Get uploader data info.

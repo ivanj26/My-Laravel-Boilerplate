@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,6 +12,18 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $model->created_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
+            $model->updated_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -49,9 +62,14 @@ class User extends Authenticatable
     ];
 
     /**
-     * 
-     * Defining relation ship
-     *
+     * //////////////////////
+     * Defining relationship
+     * //////////////////////
      */
+    public function avatar()
+    {
+        return $this->morphOne(Document::class, 'documentable', 'table', 'table_id');
+    }
+
     // code here!
 }

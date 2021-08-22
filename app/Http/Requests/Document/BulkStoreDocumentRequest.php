@@ -6,6 +6,11 @@ use App\Http\Requests\BaseRequest;
 
 class BulkStoreDocumentRequest extends BaseRequest
 {
+    public function documentableKeys()
+    {
+        return implode(',', ['App\Models\User']);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -39,6 +44,8 @@ class BulkStoreDocumentRequest extends BaseRequest
                     return true;
                 }
             ],
+            'files.*.table' => "sometimes|string|in:{$this->documentableKeys()}",
+            'files.*.tableId' => "required_with:table|numeric",
             'files.*.filename' => 'required|string'
         ];
     }
