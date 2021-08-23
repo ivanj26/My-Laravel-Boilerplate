@@ -14,8 +14,15 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Automatically fill and update timestamps.
+    *
+    * @var array
+    */
+    public $timestamps = true;
+
+    /**
      *
-     */
+    */
     public static function boot()
     {
         parent::boot();
@@ -53,13 +60,18 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+    * The attributes that should be cast to native types.
+    *
+    * @var array
+    */
     protected $casts = [
 
     ];
+
+    public function hasDocumentable()
+    {
+        return true;
+    }
 
     /**
      * //////////////////////

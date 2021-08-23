@@ -36,9 +36,6 @@ class UploadDocumentListener
     public function handle(UploadDocumentEvent $event)
     {
         try {
-            // - start trx
-            DB::beginTransaction();
-
             $document = $event->document;
             $destination = $event->destination;
             $content = $event->content;
@@ -71,6 +68,8 @@ class UploadDocumentListener
                     'type' => $document->type,
                     'uploader_id' => $document->uploader_id,
                 ];
+                // - start trx
+                DB::beginTransaction();
                 // store new document into database
                 $this->module
                     ->create($payload);

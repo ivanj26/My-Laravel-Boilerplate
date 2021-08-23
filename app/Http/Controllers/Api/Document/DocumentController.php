@@ -147,6 +147,34 @@ class DocumentController extends BaseController
     }
 
     /**
+      * Get list of document types
+      * 
+      * @return \Illuminate\Http\Response $response
+      */
+    public function documentableTypes()
+    {
+        $results = [];
+        $files = File::allFiles(app_path() . '/Models');
+        foreach ($files as $file) {
+            $name = $file->getFilenameWithoutExtension();
+            $modelPath = 'App\Models\\'. $name;
+
+            try {
+                $model = app($modelPath);
+                if ($model->hasDocumentable()) {
+                    $results[Str::lower($name)] = $modelPath;
+                }
+            } catch (\Exception $e) {
+                // ignore error
+                // if its not instantiable
+                continue;
+            }
+        }
+
+        return $this->sendResponse($results);
+    }
+
+    /**
      * Get file by filename
      * 
      * @param string $filename

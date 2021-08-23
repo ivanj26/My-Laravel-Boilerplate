@@ -29,6 +29,7 @@ Route::group([
     Route::post('session/create', [AuthController::class, 'createSession']);
     Route::post('session/sign-up', [AuthController::class, 'signUp']);
 
+    Route::get('documents/model/types', [DocumentController::class, 'documentableTypes']);
     Route::get('documents/{fileName}', [DocumentController::class, 'getByFilename']);
 
     /**
