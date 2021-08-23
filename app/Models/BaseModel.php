@@ -38,10 +38,6 @@
     public static function boot()
     {
         parent::boot();
-        static::creating(function ($model) {
-            $model->created_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
-            $model->updated_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
-        });
     }
 
     public function hasDocumentable()
