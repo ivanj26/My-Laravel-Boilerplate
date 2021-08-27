@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Document\DocumentController;
+use App\Http\Controllers\Api\Notification\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,10 @@ Route::group([
     Route::middleware(['auth:sanctum'])
         ->group(function () {
             Route::post('session/revoke', [AuthController::class, 'revokeSession']);
+
+            // Notification service
+            Route::post('notifications/email/send', [NotificationController::class, 'emailSend']);
+            Route::post('notifications/sms/send', [NotificationController::class, 'smsSend']);
 
             // Document service
             Route::post('documents', [DocumentController::class, 'store']);

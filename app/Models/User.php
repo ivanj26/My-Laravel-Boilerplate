@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,18 +18,6 @@ class User extends Authenticatable
     * @var array
     */
     public $timestamps = true;
-
-    /**
-     *
-    */
-    public static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->created_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
-            $model->updated_at = Carbon::now()->isoFormat('YYYY-MM-DD HH:mm:ss');
-        });
-    }
 
     /**
      * The attributes that are mass assignable.

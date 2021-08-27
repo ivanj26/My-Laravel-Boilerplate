@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Helper\GeneralHelper;
 use App\Http\Controllers\Api\BaseController;
+use App\Http\Modules\NotificationTemplateModule;
 use App\Http\Requests\Auth\CreateSessionRequest;
 use App\Http\Requests\Auth\SignUpRequest;
-use App\Models\User;
 use App\Http\Modules\UserModule;
-
+use App\Notifications\User\NewUserRegisteredNotification;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
@@ -27,9 +26,18 @@ class AuthController extends BaseController
      */
     private $module;
 
+    /**
+      * NotificationTemplate module.
+      * 
+      * @var NotificationTemplateModule
+      */
+    private $templateModule;
+
+
     public function __construct()
     {
         $this->module = new UserModule();
+        $this->templateModule = new NotificationTemplateModule();
     }
 
     /**
@@ -87,12 +95,22 @@ class AuthController extends BaseController
         // - start trx
         $this->startTrx();
         try {
-            $this
+            $id = $this
                 ->module
                 ->create($validated);
 
             // - commit
             $this->commitTrx();
+
+            // - send notification
+            $user = $this->module->findOneBy('id', $id);
+            $template = $this->templateModule
+                ->findOneBy('name', 'email-user-registration');
+            $data = [
+                'fullName' => $user->name,
+            ];
+
+            $user->notify(new NewUserRegisteredNotification($data, $template));
         } catch (\Exception $e) {
             // rollback
             $this->rollbackTrx();

@@ -61,4 +61,25 @@ class GeneralHelper {
 
         return $json;
     }
+
+     /**
+      * Replace all symbols with key of data
+      * 
+      * @param string $subject observed string.
+      * @param array $data the strings replacement.
+      * @param string $pattern regex to replace symbol.
+      * @return string result
+      */
+      public static function replaceAllSymbols($subject, $data, $pattern = '/\$(%s)\$/')
+      {
+          $patterns = [];
+          $replacements = [];
+ 
+          foreach ($data as $key => $value) {
+              $patterns[] = sprintf($pattern, $key);
+              $replacements[] = $value;
+          }
+ 
+          return preg_replace($patterns, $replacements, $subject);
+      }
 }

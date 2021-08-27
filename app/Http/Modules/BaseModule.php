@@ -176,8 +176,8 @@ abstract class BaseModule
     /**
      * Insert records to database.
      * 
-     * @param array payload
-     * @return \Illuminate\Database\Eloquent\Model|object|static|null
+     * @param array $payload
+    * @return int $id
      */
     public function create($payload)
     {
