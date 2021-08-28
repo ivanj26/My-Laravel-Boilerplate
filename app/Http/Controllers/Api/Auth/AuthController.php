@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\CreateSessionRequest;
 use App\Http\Requests\Auth\SignUpRequest;
 use App\Http\Modules\UserModule;
 use App\Notifications\Notification;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
@@ -53,7 +54,7 @@ class AuthController extends BaseController
         $password = data_get($validated, 'password');
 
         if (!Auth::attempt(['email' => $email, 'password' => $password])) {
-            $this->throwError(401, 'failed to issue the token');
+            $this->throwError(JsonResponse::HTTP_UNAUTHORIZED, 'failed to issue the token');
         }
 
         $user = Auth::user();
@@ -79,7 +80,7 @@ class AuthController extends BaseController
             return $this->sendResponse(null);
         }
 
-        $this->throwError(400);
+        $this->throwError(JsonResponse::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -114,9 +115,9 @@ class AuthController extends BaseController
         } catch (\Exception $e) {
             // rollback
             $this->rollbackTrx();
-            $this->throwError(400, $e->getMessage());
+            $this->throwError(JsonResponse::HTTP_BAD_REQUEST, $e->getMessage());
         } 
 
-        return $this->sendResponse(null, 201);
+        return $this->sendResponse(null, JsonResponse::HTTP_CREATED);
     }
 }

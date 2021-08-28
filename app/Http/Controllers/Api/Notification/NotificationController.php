@@ -9,6 +9,7 @@ use App\Http\Modules\NotificationTemplateModule;
 use App\Http\Requests\Notification\EmailSendRequest;
 use App\Notifications\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends BaseController
@@ -71,9 +72,9 @@ class NotificationController extends BaseController
             $event = new MailNotificationEvent($notification, $to, $cc, $attachments);
             event($event);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $this->throwError(404, $e->getMessage());
+            $this->throwError(JsonResponse::HTTP_NOT_FOUND, $e->getMessage());
         } catch (\Exception $e) {
-            $this->throwError(400, $e->getMessage());
+            $this->throwError(JsonResponse::HTTP_BAD_REQUEST, $e->getMessage());
         }
 
         return $this->sendResponse();

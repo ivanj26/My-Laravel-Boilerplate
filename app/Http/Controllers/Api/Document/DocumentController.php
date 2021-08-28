@@ -15,6 +15,7 @@ use App\Helper\ServiceCallerHelper;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Promise\EachPromise;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -140,9 +141,9 @@ class DocumentController extends BaseController
             ]);
             $eachPromises->promise()->wait();
 
-            return $this->sendResponse($results, 201);
+            return $this->sendResponse($results, JsonResponse::HTTP_CREATED);
         } catch (\Exception $e) {
-            $this->throwError(400, $e->getMessage());
+            $this->throwError(JsonResponse::HTTP_BAD_REQUEST, $e->getMessage());
         }
     }
 

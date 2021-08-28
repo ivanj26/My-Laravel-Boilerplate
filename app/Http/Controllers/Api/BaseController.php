@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isEmpty;
@@ -48,7 +49,7 @@ class BaseController extends Controller {
      * @param string $message 
      * @return \Illuminate\Http\Response $response
      */
-    public function sendResponse($data = null, $code = 200, $message = '')
+    public function sendResponse($data = null, $code = JsonResponse::HTTP_OK, $message = '')
     {
         $trace = debug_backtrace()[2];
         $actionName = $trace['args'][0];
