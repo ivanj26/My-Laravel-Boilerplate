@@ -7,7 +7,7 @@ use App\Http\Modules\NotificationTemplateModule;
 use App\Http\Requests\Auth\CreateSessionRequest;
 use App\Http\Requests\Auth\SignUpRequest;
 use App\Http\Modules\UserModule;
-use App\Notifications\User\NewUserRegisteredNotification;
+use App\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
@@ -110,7 +110,7 @@ class AuthController extends BaseController
                 'fullName' => $user->name,
             ];
 
-            $user->notify(new NewUserRegisteredNotification($data, $template));
+            $user->notify(new Notification($data, $template));
         } catch (\Exception $e) {
             // rollback
             $this->rollbackTrx();

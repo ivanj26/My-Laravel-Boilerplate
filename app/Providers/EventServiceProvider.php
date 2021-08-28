@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\MailNotificationEvent;
 use App\Events\UploadDocumentEvent;
+use App\Listeners\MailNotificationListener;
 use App\Listeners\UploadDocumentListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -16,6 +18,10 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         UploadDocumentEvent::class => [
             UploadDocumentListener::class
+        ],
+
+        MailNotificationEvent::class => [
+            MailNotificationListener::class
         ]
     ];
 

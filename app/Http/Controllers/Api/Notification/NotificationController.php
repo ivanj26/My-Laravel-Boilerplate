@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\Notification;
 
+use App\Events\MailNotificationEvent;
 use App\Helper\GeneralHelper;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Modules\NotificationTemplateModule;
 use App\Http\Requests\Notification\EmailSendRequest;
+use App\Notifications\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,6 +42,9 @@ class NotificationController extends BaseController
     {
         $validated = $request->validated();
         $name = data_get($validated, 'name');
+        $to = data_get($validated, 'to');
+        $attachments = data_get($validated, 'attachments', []);
+        $cc = data_get($validated, 'cc');
         $data = GeneralHelper::toCamelCase(data_get($validated, 'data'));
 
         try {
@@ -62,7 +67,9 @@ class NotificationController extends BaseController
             }
 
             // - send email via event
-            // event();
+            $notification = new Notification($data, $template);
+            $event = new MailNotificationEvent($notification, $to, $cc, $attachments);
+            event($event);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $this->throwError(404, $e->getMessage());
         } catch (\Exception $e) {
