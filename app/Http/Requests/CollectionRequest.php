@@ -40,13 +40,6 @@ class CollectionRequest extends BaseRequest
             $validated['limit'] = 10;
         }
 
-        $query = $this->query();
-        $remove = ['page', 'limit', 'sortBy', 'orderBy'];
-        $additionalQuery = array_diff_key($query, array_flip($remove));
-        foreach ($additionalQuery as $key => $value) {
-            $validated[$key] = Str::snake($value ?? '');
-        }
-
         return GeneralHelper::toSnakeCase($validated);
     }
 }
