@@ -10,20 +10,21 @@ use App\Http\Requests\Notification\EmailSendRequest;
 use App\Notifications\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends BaseController
 {
     /**
      * The service name.
-     * 
+     *
      * @var String
      */
     protected $name = 'notification service';
 
     /**
      * NotificationTemplate module.
-     * 
+     *
      * @var NotificationTemplateModule
      */
     private $module;
@@ -35,7 +36,7 @@ class NotificationController extends BaseController
 
     /**
      * send email notification to receivers
-     * 
+     *
      * @param EmailSendRequest $request
      * @return \Illuminate\Http\Response $response
      */
@@ -52,7 +53,7 @@ class NotificationController extends BaseController
             $template = $this->module->findOneBy('name', $name);
             $rules = data_get($template, 'required_data');
             $rules = json_decode($rules, true);
-    
+
             // - validate required data
             $validator = Validator::make($data, $rules);
             if ($validator->fails()) {
@@ -67,8 +68,12 @@ class NotificationController extends BaseController
                 );
             }
 
+            // - Get user lang
+            $user = $this->userModule->findOneBy('id', Auth::user()->id, null, false);
+            $locale = $user->country ?? 'id';
+
             // - send email via event
-            $notification = new Notification($data, $template);
+            $notification = new Notification($data, $template, $locale);
             $event = new MailNotificationEvent($notification, $to, $cc, $attachments);
             event($event);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

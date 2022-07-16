@@ -55,9 +55,24 @@ class User extends Authenticatable
 
     ];
 
+    /**
+     * Return true if the model may owns document in document table.
+     *
+     * @return bool
+     */
     public function hasDocumentable()
     {
         return true;
+    }
+
+    /**
+     * Check user role, is user 'admin'?
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 
     /**
@@ -67,7 +82,9 @@ class User extends Authenticatable
      */
     public function avatar()
     {
-        return $this->morphOne(Document::class, 'documentable', 'table', 'table_id');
+        return $this->morphOne(Document::class, 'documentable', 'table', 'table_id')
+            ->whereRaw('`documents`.`type` = ?', ['images'])
+            ->latest();
     }
 
     // code here!

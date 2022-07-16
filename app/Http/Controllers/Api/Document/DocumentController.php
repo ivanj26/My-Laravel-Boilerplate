@@ -23,14 +23,14 @@ class DocumentController extends BaseController
 {
     /**
      * The service name.
-     * 
+     *
      * @var String
      */
     protected $name = 'document service';
 
     /**
      * Document module.
-     * 
+     *
      * @var DocumentModule
      */
     private $module;
@@ -46,7 +46,7 @@ class DocumentController extends BaseController
 
     /**
      * store a new documents to App filesystem.
-     * 
+     *
      * @param StoreDocumentRequest $request
      * @return \Illuminate\Http\Response $response
      */
@@ -59,13 +59,19 @@ class DocumentController extends BaseController
         $content = data_get($validated, 'content');
         $filename = data_get($validated, 'filename');
         $filename = data_get(Str::of($filename)->explode('.'), '0');
+
+        if (!($table == 'App\\Models\\User' && $tableId == $user->id)) {
+            $this->throwError(JsonResponse::HTTP_UNAUTHORIZED, 'failed to update another user document!');
+        }
+
         // - get file mimetype
         $content = base64_decode($content, true);
         $f = finfo_open();
         $mimeType = finfo_buffer($f, $content, FILEINFO_MIME_TYPE);
         finfo_close($f);
+
         // - get file ext
-        $mimes = new \Mimey\MimeTypes; 
+        $mimes = new \Mimey\MimeTypes;
         $extension = $mimes->getExtension($mimeType);
         if (!$extension) {
             $prefixExts = ['text', 'application', 'audio', 'video'];
@@ -74,8 +80,10 @@ class DocumentController extends BaseController
                 if ($extension) break;
             }
         }
+
         // - construct filename
         $filename = $filename. '-' . Str::random(10) . '-' . time() . ".{$extension}";
+
         // - prepare upload file to filesystem
         $type = 'documents';
         if(strstr($mimeType, "video/")){
@@ -85,7 +93,9 @@ class DocumentController extends BaseController
         }
         $date = Carbon::now()->isoFormat('DDMMYYYY');
         $destination = "/uploads/{$type}/{$date}/" . $filename;
-        $url = "/api/v1/documents/{$filename}";
+        $url = $user->isAdmin()
+            ? "/api/v1/admin/documents/{$filename}"
+            : "/api/v1/documents/{$filename}";
         $url = env('APP_ENV') === 'local'
             ? env('APP_URL').':'.env('APP_PORT'). $url
             : env('APP_URL'). $url;
@@ -109,12 +119,12 @@ class DocumentController extends BaseController
         return $this->sendResponse([
             'url' => $url,
             'filename' => $filename
-        ], 201);
+        ], JsonResponse::HTTP_CREATED);
     }
 
     /**
      * bulk upload files to File system
-     * 
+     *
      * @param BulkStoreDocumentRequest $request
      * @return \Illuminate\Http\Response $response
      */
@@ -127,7 +137,7 @@ class DocumentController extends BaseController
             $results = [];
             $promises = (function() use($files) {
                 foreach ($files as $file) {
-                    yield ServiceCallerHelper::call('POST', '/api/v1/documents', $file);
+                    yield ServiceCallerHelper::call('POST', '/api/v1/admin/documents', $file);
                 }
             }) ();
             $eachPromises = new EachPromise($promises, [
@@ -149,7 +159,7 @@ class DocumentController extends BaseController
 
     /**
       * Get list of document types
-      * 
+      *
       * @return \Illuminate\Http\Response $response
       */
     public function documentableTypes()
@@ -163,7 +173,7 @@ class DocumentController extends BaseController
             try {
                 $model = app($modelPath);
                 if ($model->hasDocumentable()) {
-                    $results[Str::lower($name)] = $modelPath;
+                    $results[Str::lower(Str::plural($name))] = $modelPath;
                 }
             } catch (\Exception $e) {
                 // ignore error
@@ -177,7 +187,7 @@ class DocumentController extends BaseController
 
     /**
      * Get file by filename
-     * 
+     *
      * @param string $filename
      * @return \Illuminate\Http\Response $response
      */
