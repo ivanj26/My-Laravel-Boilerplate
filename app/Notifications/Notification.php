@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification as BaseNotification;
+use Illuminate\Support\Facades\App;
 
 class Notification extends BaseNotification implements ShouldQueue
 {
@@ -25,15 +26,21 @@ class Notification extends BaseNotification implements ShouldQueue
     protected $template = null;
 
     /**
+     * Locale information
+     * @var \App\Models\NotificationTemplate
+     */
+    public $locale = null;
+
+    /**
      * cc email
-     * 
+     *
      * @var string|array
      */
     private $cc = [];
 
     /**
      * attachments
-     * 
+     *
      * @var array
      */
     private $attachments = [];
@@ -43,11 +50,13 @@ class Notification extends BaseNotification implements ShouldQueue
      *
      * @param array $data
      * @param \App\Models\NotificationTemplate $template
+     * @param string $locale
      * @return void
      */
-    public function __construct($data, $template)
+    public function __construct($data, $template, $locale = 'id')
     {
         $this->data = $data;
+        $this->locale = $locale;
         $this->template = $template;
     }
 
@@ -64,7 +73,7 @@ class Notification extends BaseNotification implements ShouldQueue
 
     /**
      * set cc emails
-     * 
+     *
      * @param array|string $cc;
      * @return void
      */
@@ -75,7 +84,7 @@ class Notification extends BaseNotification implements ShouldQueue
 
     /**
      * set cc emails
-     * 
+     *
      * @param array $file
      * @return void
      */
@@ -107,6 +116,9 @@ class Notification extends BaseNotification implements ShouldQueue
                 ['mime' => data_get($attachment, 'mimetype')]
             );
         }
+
+        // - set locale before render html view
+        App::setLocale($this->locale);
 
         return $mailMsg->view($htmlPath, $this->data);
     }

@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class GeneralHelper {
     /**
      * Convert payload to camel case.
-     * 
+     *
      * @param \Illuminate\Http\Request $json
      * @return array|null
      */
@@ -20,7 +20,7 @@ class GeneralHelper {
                 foreach ($json as $key => $value) {
                     $result[Str::camel($key)] = GeneralHelper::toCamelCase($value);
                 }
-    
+
                 return $result;
             } else {
                 $result = [];
@@ -36,7 +36,7 @@ class GeneralHelper {
 
     /**
      * Convert payload to snake case.
-     * 
+     *
      * @param \Illuminate\Http\Request $json
      * @return array|null
      */
@@ -48,7 +48,7 @@ class GeneralHelper {
                 foreach ($json as $key => $value) {
                     $result[Str::snake($key)] = GeneralHelper::toSnakeCase($value);
                 }
-    
+
                 return $result;
             } else {
                 $result = [];
@@ -64,7 +64,7 @@ class GeneralHelper {
 
      /**
       * Replace all symbols with key of data
-      * 
+      *
       * @param string $subject observed string.
       * @param array $data the strings replacement.
       * @param string $pattern regex to replace symbol.
@@ -74,12 +74,32 @@ class GeneralHelper {
       {
           $patterns = [];
           $replacements = [];
- 
+
           foreach ($data as $key => $value) {
-              $patterns[] = sprintf($pattern, $key);
-              $replacements[] = $value;
+            if (is_string($value)) {
+                $patterns[] = sprintf($pattern, $key);
+                $replacements[] = $value;
+            }
           }
- 
+
           return preg_replace($patterns, $replacements, $subject);
       }
+
+        /**
+         * Create random strings with specified length.
+         *
+         * @param string $prefix prefix word.
+         * @param int $digit digit of number.
+         * @return string $result
+         *
+         */
+        public static function generateRandomString($prefix, $digit = 5)
+        {
+            $rand = Str::random($digit);
+            if (empty($prefix) && Str::length($prefix) > 3) {
+                return $rand;
+            }
+
+            return Str::upper($prefix . '-' . $rand);
+        }
 }

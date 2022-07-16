@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Helper\ServiceCallerHelper;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Modules\NotificationTemplateModule;
 use App\Http\Requests\Auth\CreateSessionRequest;
 use App\Http\Requests\Auth\SignUpRequest;
 use App\Http\Modules\UserModule;
-use App\Notifications\Notification;
+use App\Services\CreateRandomTokenService;
+use GuzzleHttp\Promise\Promise;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,21 +17,21 @@ class AuthController extends BaseController
 {
     /**
      * The service name.
-     * 
+     *
      * @var String
      */
     protected $name = 'auth service';
 
     /**
      * User module.
-     * 
+     *
      * @var UserModule
      */
     private $module;
 
     /**
       * NotificationTemplate module.
-      * 
+      *
       * @var NotificationTemplateModule
       */
     private $templateModule;
@@ -43,7 +45,7 @@ class AuthController extends BaseController
 
     /**
      * Create session token for the client.
-     * 
+     *
      * @param CreateSessionRequest request
      * @return \Illuminate\Http\Response response
      */
@@ -68,7 +70,7 @@ class AuthController extends BaseController
 
     /**
      * Revoke session token.
-     * 
+     *
      * @param
      * @return \Illuminate\Http\Response
      */
@@ -85,7 +87,7 @@ class AuthController extends BaseController
 
     /**
      * Create new user for this application.
-     * 
+     *
      * @param SignUpRequest request
      * @return \Illuminate\Http\Response response
      */
@@ -96,6 +98,9 @@ class AuthController extends BaseController
         // - start trx
         $this->startTrx();
         try {
+            $token = CreateRandomTokenService::generate();
+            $validated['verify_token'] = $token;
+
             $id = $this
                 ->module
                 ->create($validated);
@@ -105,18 +110,30 @@ class AuthController extends BaseController
 
             // - send notification
             $user = $this->module->findOneBy('id', $id);
-            $template = $this->templateModule
-                ->findOneBy('name', 'email-user-registration');
-            $data = [
-                'fullName' => $user->name,
+            $body = [
+                'data' => [
+                    'fullName' => data_get($user, 'name'),
+                    'email' => data_get($user, 'email'),
+                    'appName' => env('APP_NAME'),
+                    'token' => $token
+                ],
+                'name' => 'email-user-registration',
+                'to' => data_get($validated, 'email'),
+                'cc' => []
             ];
 
-            $user->notify(new Notification($data, $template));
+            $promise = new Promise(function() use(&$promise, $body, $id) {
+                Auth::loginUsingId($id);
+
+                $res = ServiceCallerHelper::call('POST', '/api/v1/notifications/email/send', $body);
+                $promise->resolve($res);
+            });
+            $promise->wait();
         } catch (\Exception $e) {
             // rollback
             $this->rollbackTrx();
             $this->throwError(JsonResponse::HTTP_BAD_REQUEST, $e->getMessage());
-        } 
+        }
 
         return $this->sendResponse(null, JsonResponse::HTTP_CREATED);
     }

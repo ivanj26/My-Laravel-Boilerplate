@@ -3,10 +3,33 @@
  namespace App\Listeners;
 
  use App\Events\MailNotificationEvent;
- use Illuminate\Support\Facades\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Notification;
 
- class MailNotificationListener
+ class MailNotificationListener implements ShouldQueue
  {
+    /**
+     * Name of the connection the job should be sent to.
+     *
+     * @var string|null
+     */
+    public $connection = 'database';
+
+    /**
+     * Name of the connection the job should be sent to.
+     *
+     * @var string|null
+     */
+    public $queue = 'listener';
+
+    /**
+     * Delay before the job be consumed.
+     *
+     * @var string|null
+     */
+    public $delay = 5;
+
     /**
     * Create the event listener.
     *
@@ -58,5 +81,8 @@
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
+
+        // Set to default locale
+        App::setLocale('en');
     }
 }

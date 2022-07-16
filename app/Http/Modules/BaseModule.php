@@ -10,28 +10,28 @@ abstract class BaseModule
 {
     /**
      * The class model.
-     * 
+     *
      * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
 
     /**
      * The query builder.
-     * 
+     *
      * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
 
     /**
      * Array of related models to eager load.
-     * 
+     *
      * @var array
      */
     protected $eagers = [];
 
     /**
      * Set custom eagers load.
-     * 
+     *
      * @param array|string relations
      * @return BaseModule this
      */
@@ -47,7 +47,7 @@ abstract class BaseModule
 
     /**
      * Set order to query builder.
-     * 
+     *
      * @param orderBy ordered by a given column.
      * @param sortBy ascending or descending order.
      * @return BaseModule this.
@@ -77,14 +77,14 @@ abstract class BaseModule
 	 * @return \Illuminate\Database\Eloquent\Builder $builder
 	 */
 	protected function eagerLoad()
-	{ 
+	{
 		return $this->query->with($this->eagers);
 	}
- 
+
 
     /**
      * Get all records in the database.
-     * 
+     *
      * @param Closure modifier
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
@@ -102,7 +102,7 @@ abstract class BaseModule
 
     /**
      * Get paginated records in the database.
-     * 
+     *
      * @param int limit
      * @param int page
      * @param array columns
@@ -113,8 +113,8 @@ abstract class BaseModule
     public function paginate($limit = 10, $page = 1, Closure $modifier = null, array $columns = ['*'], $pageName = 'page')
     {
         $builder = $this
-            ->newQuery()
-            ->eagerLoad();
+            ->query
+            ->with($this->eagers);
         if (is_callable($modifier)) {
             $builder = $builder->where($modifier);
         }
@@ -124,7 +124,7 @@ abstract class BaseModule
 
     /**
      * Get first records from given modifier in the database.
-     * 
+     *
      * @param Closure modifier
      * @param bool $throwError default true
      * @return \Illuminate\Database\Eloquent\Model|object|static|null
@@ -148,7 +148,7 @@ abstract class BaseModule
 
     /**
      * Get records with given condition in the database.
-     * 
+     *
      * @param String column
      * @param String value
      * @param Closure modifier
@@ -175,7 +175,7 @@ abstract class BaseModule
 
     /**
      * Insert records to database.
-     * 
+     *
      * @param array $payload
     * @return int $id
      */
@@ -191,7 +191,7 @@ abstract class BaseModule
 
     /**
      * Find and update record in database
-     * 
+     *
      * @param string $column
      * @param string $value
      * @param array $payload
