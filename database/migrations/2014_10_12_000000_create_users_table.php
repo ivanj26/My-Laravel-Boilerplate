@@ -19,18 +19,6 @@ class CreateUsersTable extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('password');
             $table->string('phone')->unique();
-            $table->string('identity_number');
-            $table->string('identity_type');
-            $table->text('identity_photo_url')
-                ->nullable();
-            $table->string('address')
-                ->nullable();
-            $table->integer('zip_code', false, true)
-                ->nullable();
-            $table->tinyText('city')
-                ->nullable();
-            $table->tinyText('province')
-                ->nullable();
             $table->tinyText('country')
                 ->nullable();
             $table->boolean('is_email_verified')

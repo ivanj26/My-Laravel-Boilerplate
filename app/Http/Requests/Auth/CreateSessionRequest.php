@@ -15,7 +15,8 @@ class CreateSessionRequest extends BaseRequest
     {
         return [
             'email' => 'required|email:filter',
-            'password' => 'required|min:8'
+            'password' => 'required|min:8',
+            'captcha' => 'required|captcha'
         ];
     }
 }

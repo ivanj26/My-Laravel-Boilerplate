@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Captcha\CaptchaController;
 use App\Http\Controllers\Api\Document\DocumentController;
 use App\Http\Controllers\Api\Notification\NotificationController;
 
@@ -32,6 +33,8 @@ Route::group([
         Route::post('create', [AuthController::class, 'createSession']);
         Route::post('sign-up', [AuthController::class, 'signUp']);
     });
+
+    Route::get('captcha/refresh', [CaptchaController::class, 'refreshCaptcha']);
 
     // Document service
     Route::prefix('documents')->group(function() {

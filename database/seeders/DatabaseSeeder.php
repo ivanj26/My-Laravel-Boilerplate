@@ -13,7 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        // php artisan db:seed --class "Database/Seeders/{SeederName}"
+        // e.g. php artisan db:seed --class "Database/Seeders/UserSeeder"
+
         // $notifSeeder = new NotificationTemplateSeeder();
         // $notifSeeder->run();
+
+        // $userSeeder = new UserSeeder();
+        // $userSeeder->run();
     }
 }
