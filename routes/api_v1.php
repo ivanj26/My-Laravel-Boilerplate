@@ -27,11 +27,17 @@ Route::group([
      */
     Route::get('/', [IndexController::class, 'healthCheck']);
 
-    Route::post('session/create', [AuthController::class, 'createSession']);
-    Route::post('session/sign-up', [AuthController::class, 'signUp']);
+    // Auth service
+    Route::prefix('session')->group(function() {
+        Route::post('create', [AuthController::class, 'createSession']);
+        Route::post('sign-up', [AuthController::class, 'signUp']);
+    });
 
-    Route::get('documents/model/types', [DocumentController::class, 'documentableTypes']);
-    Route::get('documents/{fileName}', [DocumentController::class, 'getByFilename']);
+    // Document service
+    Route::prefix('documents')->group(function() {
+        Route::get('types', [DocumentController::class, 'types']);
+        Route::get('{fileName}', [DocumentController::class, 'getByFilename']);
+    });
 
     /**
      * PRIVATE APIs
@@ -41,12 +47,16 @@ Route::group([
             Route::post('session/revoke', [AuthController::class, 'revokeSession']);
 
             // Notification service
-            Route::post('notifications/email/send', [NotificationController::class, 'emailSend']);
-            Route::post('notifications/sms/send', [NotificationController::class, 'smsSend']);
+            Route::prefix('notifications')->group(function() {
+                Route::post('email/send', [NotificationController::class, 'emailSend']);
+                Route::post('sms/send', [NotificationController::class, 'smsSend']);
+            });
 
-            // Document service
-            Route::post('documents', [DocumentController::class, 'store']);
-            Route::post('documents/bulk', [DocumentController::class, 'bulkStore']);
+            // Document service (for storing data)
+            Route::prefix('documents')->group(function() {
+                Route::post('/', [DocumentController::class, 'store']);
+                Route::post('bulk', [DocumentController::class, 'bulkStore']);
+            });
 
             // Other service
             //

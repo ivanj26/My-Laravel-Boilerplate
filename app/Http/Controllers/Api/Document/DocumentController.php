@@ -162,7 +162,7 @@ class DocumentController extends BaseController
       *
       * @return \Illuminate\Http\Response $response
       */
-    public function documentableTypes()
+    public function types()
     {
         $results = [];
         $files = File::allFiles(app_path() . '/Models');

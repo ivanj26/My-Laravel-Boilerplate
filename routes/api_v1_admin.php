@@ -11,6 +11,12 @@ Route::group([
     */
     Route::post('session/create', [AuthController::class, 'createSession']);
 
+    // Document service
+    Route::prefix('documents')->group(function() {
+        Route::get('types', [DocumentController::class, 'types']);
+        Route::get('{fileName}', [DocumentController::class, 'getByFilename']);
+    });
+
     /**
      * PRIVATE APIs
      */
