@@ -21,7 +21,7 @@
                 'type' => 'email',
                 'required_data' => json_encode([
                     'fullName' => 'required|string|min:3',
-                    'email' => 'required|string|filter:email'
+                    'email' => 'required|string|email:filter'
                 ]),
                 'title' => 'Ini subject email',
                 'template_path' => 'emails.user.registration'

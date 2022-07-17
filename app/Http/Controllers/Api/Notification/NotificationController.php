@@ -6,6 +6,7 @@ use App\Events\MailNotificationEvent;
 use App\Helper\GeneralHelper;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Modules\NotificationTemplateModule;
+use App\Http\Modules\UserModule;
 use App\Http\Requests\Notification\EmailSendRequest;
 use App\Notifications\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -29,9 +30,17 @@ class NotificationController extends BaseController
      */
     private $module;
 
+    /**
+     * User module.
+     *
+     * @var NotificationTemplateModule
+     */
+    private $userModule;
+
     public function __construct()
     {
         $this->module = new NotificationTemplateModule();
+        $this->userModule = new UserModule();
     }
 
     /**
