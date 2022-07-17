@@ -20,8 +20,6 @@ class SignUpRequest extends BaseRequest
             'email' => 'email:filter|string|unique:users,email',
             'password' => 'required||min:8',
             'confirmPassword' => 'required|same:password',
-            'identityNumber' => 'required|numeric|digits_between:10,17',
-            'identityType' => 'required'
         ];
     }
 

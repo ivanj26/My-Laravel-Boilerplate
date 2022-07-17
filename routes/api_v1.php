@@ -56,10 +56,7 @@ Route::group([
             });
 
             // Document service (for storing data)
-            Route::prefix('documents')->group(function() {
-                Route::post('/', [DocumentController::class, 'store']);
-                Route::post('bulk', [DocumentController::class, 'bulkStore']);
-            });
+            Route::post('documents', [DocumentController::class, 'store']);
 
             // Other service
             //

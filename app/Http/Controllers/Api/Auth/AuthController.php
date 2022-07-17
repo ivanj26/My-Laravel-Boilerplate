@@ -10,6 +10,8 @@ use App\Http\Requests\Auth\SignUpRequest;
 use App\Http\Modules\UserModule;
 use App\Services\CreateRandomTokenService;
 use GuzzleHttp\Promise\Promise;
+
+use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -78,7 +80,10 @@ class AuthController extends BaseController
     {
         $user = Auth::user();
         if ($user) {
-            $user->currentAccessToken()->delete();
+            $tokenId = Str::before(request()->bearerToken(), '|');
+            auth()->user()->tokens()->where('id', $tokenId )->delete();
+            auth()->guard('web')->logout();
+
             return $this->sendResponse(null);
         }
 
