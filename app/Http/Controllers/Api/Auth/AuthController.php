@@ -13,7 +13,9 @@ use GuzzleHttp\Promise\Promise;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AuthController extends BaseController
 {
@@ -141,5 +143,33 @@ class AuthController extends BaseController
         }
 
         return $this->sendResponse(null, JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * Verify given token from incoming request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $token
+     * @return \Illuminate\Http\Response $response
+     */
+    public function verifyEmail(Request $request, string $token)
+    {
+        try {
+            if (empty($token)) {
+                throw new BadRequestException("failed because receive empty token!");
+            }
+
+            $this->startTrx();
+
+            $user = $this->module->findOneBy('verify_token', $token);
+            $user->is_email_verified = true;
+            $user->save();
+
+            $this->commitTrx();
+
+            return $this->sendResponse($user);
+        } catch (\Exception $e) {
+            $this->throwError(JsonResponse::HTTP_BAD_REQUEST, $e->getMessage());
+        }
     }
 }

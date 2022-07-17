@@ -34,6 +34,11 @@ Route::group([
         Route::post('sign-up', [AuthController::class, 'signUp']);
     });
 
+    // User service
+    Route::prefix('user')->group(function(){
+        Route::post('profile/verify/{token}', [AuthController::class, 'verifyEmail']);
+    });
+
     Route::get('captcha/refresh', [CaptchaController::class, 'refreshCaptcha']);
 
     // Document service

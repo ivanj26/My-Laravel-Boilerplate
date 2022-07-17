@@ -48,6 +48,9 @@ use Illuminate\Support\Facades\Notification;
     */
     public function handle(MailNotificationEvent $event)
     {
+        // to consume the event by simply running the queue
+        // php artisan queue:work --queue listener -- database
+
         try {
             $notification = $event->notification;
             $toEmail = $event->to;
