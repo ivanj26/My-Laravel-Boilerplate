@@ -5,6 +5,7 @@ namespace App\Http\Modules;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 abstract class BaseModule
 {
@@ -25,7 +26,7 @@ abstract class BaseModule
     /**
      * Array of related models to eager load.
      *
-     * @var array
+     * @var string[]|array
      */
     protected $eagers = [];
 
@@ -38,7 +39,7 @@ abstract class BaseModule
     public function with($relations)
     {
         if (is_string($relations)) {
-            $relations = [$relations];
+            $relations = explode(',', $relations);
         }
 
         $this->eagers = $relations;
@@ -50,7 +51,7 @@ abstract class BaseModule
      *
      * @param orderBy ordered by a given column.
      * @param sortBy ascending or descending order.
-     * @return BaseModule this.
+     * @return BaseModule $this.
      */
     public function order($orderBy, $sortBy)
     {
@@ -61,11 +62,34 @@ abstract class BaseModule
     }
 
     /**
+     * Set column selection to query builder
+     *
+     * @param array|string[] ...$columns
+     * @return BaseModule $this.
+     */
+    public function select(string ...$columns)
+    {
+        $raw = '';
+        $total = count($columns);
+        $last = $total - 1;
+
+        for ($i = 0; $i < count($columns); $i++) {
+            $raw .= $columns[$i];
+            if ($last != $i) {
+                $raw = $raw . ', ';
+            }
+        }
+
+        $this->query = $this->query->addSelect(DB::raw($raw));
+        return $this;
+    }
+
+    /**
 	 * Create a new instance of the model's query builder
 	 *
 	 * @return $this
 	 */
-	protected function newQuery()
+	public function newQuery()
 	{
 		$this->query = $this->model->newQuery();
 		return $this;
@@ -209,5 +233,25 @@ abstract class BaseModule
         }
 
         return $model->save();
+    }
+
+    /**
+      * Get query result.
+      *
+      * @return \Illuminate\Database\Eloquent\Collection|static[]
+      */
+      public function query()
+      {
+        return $this->query->get();
+      }
+
+    /**
+     * Get first query result.
+     *
+     * @return \Illuminate\Database\Eloquent\Model|object|static|null
+    */
+    public function first()
+    {
+        return $this->query->first();
     }
 }
